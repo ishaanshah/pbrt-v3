@@ -53,14 +53,21 @@ class BRDFTexture: public Texture<Spectrum> {
   public:
     // ConstantTexture Public Methods
     BRDFTexture(const Vector3f &wi, const std::string bsdffile)
-      : wi(wi) {
+      : wi(Normalize(wi)) {
+        bsdfTable = new FourierBSDFTable();
         FourierBSDFTable::Read(bsdffile, bsdfTable);
         bsdf = new FourierBSDF(*bsdfTable, TransportMode::Radiance);
       }
 
     Spectrum Evaluate(const SurfaceInteraction &si) const {
       Vector3f norm(si.n.x, si.n.y, si.n.z);
-      return bsdf->f(norm, wi);
+      auto woLocal = si.bsdf->WorldToLocal(si.wo);
+      auto wiLocal = si.bsdf->WorldToLocal(wi);
+      Spectrum res = bsdf->f(woLocal, wiLocal);
+      float rgb[3];
+      res.ToRGB(rgb);
+      float len = Vector3f(rgb[0], rgb[1], rgb[2]).Length();
+      return Spectrum(len);
     }
 
   private:

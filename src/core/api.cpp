@@ -100,6 +100,7 @@
 #include "shapes/triangle.h"
 #include "shapes/plymesh.h"
 #include "textures/bilerp.h"
+#include "textures/brdf.h"
 #include "textures/checkerboard.h"
 #include "textures/constant.h"
 #include "textures/dots.h"
@@ -648,6 +649,8 @@ std::shared_ptr<Texture<Spectrum>> MakeSpectrumTexture(
     Texture<Spectrum> *tex = nullptr;
     if (name == "constant")
         tex = CreateConstantSpectrumTexture(tex2world, tp);
+    else if (name == "brdf")
+        tex = CreateBRDFTexture(tex2world, tp);
     else if (name == "scale")
         tex = CreateScaleSpectrumTexture(tex2world, tp);
     else if (name == "mix")
@@ -1196,7 +1199,6 @@ void pbrtTexture(const std::string &name, const std::string &type,
         printf("\n");
         return;
     }
-
     TextureParams tp(params, params, *graphicsState.floatTextures,
                      *graphicsState.spectrumTextures);
     if (type == "float") {
