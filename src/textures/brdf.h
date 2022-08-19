@@ -67,7 +67,11 @@ class BRDFTexture: public Texture<Spectrum> {
       float rgb[3];
       res.ToRGB(rgb);
       float len = Vector3f(rgb[0], rgb[1], rgb[2]).Length();
-      return Spectrum(len);
+      float zeroRGB[3] = {0., 0., 1.};
+      float oneRGB[3] = {1., 0., 0.};
+      Spectrum zeroColor = Spectrum::FromRGB(zeroRGB);
+      Spectrum oneColor = Spectrum::FromRGB(oneRGB);
+      return Lerp(len / std::sqrt(3), zeroColor, oneColor);
     }
 
   private:
